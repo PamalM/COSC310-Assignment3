@@ -111,10 +111,12 @@ current_Second = datetime.now().second
 #Train using a specified corpus.
 corpus_trainer.train('chatterbot.corpus.english')
 
+'''
 #Open datasets to train the bot.
 with open('Data/chats.txt', 'r') as file:
     data = file.readlines()
     trainer.train(data)
+'''
 
 print("[Training Process complete]")
     

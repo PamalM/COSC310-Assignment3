@@ -6,9 +6,10 @@ from tkinter import *
 import logging
 import random
 import os
-
+from autocorrect import Speller
 import chatBot_Client
 import chatBot_Server
+import array
     
 def connect():
     #Method presents GUI for user to connect to host/port and/or recieve connection.
@@ -65,7 +66,8 @@ def connect():
 
 #Create and start the GUI presentation to the user.
 def startGUI():
-
+    # auto correct
+    spell = Speller(lang='en')
     #Global attributes.
     global root
     global txtOutput
@@ -114,9 +116,9 @@ def startGUI():
     def interact():
 
         #Get user input from textbox. 
-        request = userMessage.get()
+        request = userMessage.get() 
         userMessage.set("")
-
+        print(request)
         #Color coordinate user/bot responses.
         txtOutput.tag_config('bot', background="mediumpurple1", foreground="white")
         txtOutput.tag_config('user', background="peach puff", foreground="black")
@@ -129,8 +131,11 @@ def startGUI():
             txtOutput.config(state="disabled")
 
         def printBot():
+            #auto correct -> pip install autocorrect
+           # print(request)
             #Get bot's response for the user request.
             response = bot.get_response(request)
+            
             #If the bot has a response print it.
             if str(response) != "":
                 txtOutput.config(state="normal")
@@ -184,6 +189,7 @@ def startGUI():
 
     #Keep window running until otherwise. 
     root.mainloop()    
+
 
 def displayDateTime(tag):
 

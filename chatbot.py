@@ -4,6 +4,64 @@ from datetime import datetime
 from chatterbot import ChatBot
 from tkinter import *
 import logging
+import random
+import os
+
+import chatBot_Client
+import chatBot_Server
+    
+def connect():
+    #Method presents GUI for user to connect to host/port and/or recieve connection.
+    global main
+    global userPort
+    global userHost
+    main = Tk()
+
+    hostLabel = Label(main, text="HOST:", bg="#88324f", fg="ghost white", font='Helvetica 20 bold')
+    portLabel = Label(main, text="PORT:", bg="#88324f", fg="ghost white", font='Helvetica 20 bold')
+    hostLabel.place(x= 138, y= 180)
+    portLabel.place(x= 138, y= 260)
+
+    label1 = Label(main, text="Recieve connection from external Chat Agent.", font="Helvetica 12 bold", fg="slate blue", bg="ghost white")
+    label1.place(x= 50, y=20)
+
+    label2 = Label(main, text="Connect to external connection", font="Helvetica 12 bold", fg="slate blue", bg="ghost white")
+    label2.place(x= 82, y=130)
+
+    userHost = StringVar()
+    userHostBox = Entry(main, bg="thistle1", textvariable=userHost, width=14)
+    userHostBox.place(x = 108, y = 210)
+
+    userPort = int()
+    userPortBox = Entry(main, bg="thistle1", textvariable=userPort, width=14)
+    userPortBox.place(x = 108, y = 290)
+
+    def recieve(tag):
+        root.destroy()
+        if tag == 1:
+            #Stays open and infinetly searches for any incoming connections.
+            chatBot_Server.connect()
+
+    def connection():
+        #Attempt to create new connection with the specified credentials [Host/Port].
+        host = userHostBox.get()
+        port = userPortBox.get()
+        chatBot_Client.openConnection(host, int(port))
+        root.destroy()
+        main.destroy()
+
+    #Button opens up and searches for avaliable external connections.
+    recieveButton = Button(main, text="Recieve Connection", font='Helvetica 16 bold', command = lambda: recieve(1))
+    recieveButton.place(x=100, y=50)
+
+    #Button opens up and searches for avaliable external connections.
+    connectButton = Button(main, text="Search Connection", font='Helvetica 16 bold', command = lambda: connection())
+    connectButton.place(x=102, y=350)
+
+    main.title("Connect to chat: ")
+    main.geometry("350x450")
+    main.resizable('False', 'False')
+    main.mainloop()
 
 #Create and start the GUI presentation to the user.
 def startGUI():
@@ -73,10 +131,25 @@ def startGUI():
         def printBot():
             #Get bot's response for the user request.
             response = bot.get_response(request)
-            txtOutput.config(state="normal")
-            txtOutput.insert(INSERT,("ChatBot:    " + str(response) + "\n"), 'bot')
-            txtOutput.insert(INSERT,"\n")
-            txtOutput.config(state="disabled")
+            #If the bot has a response print it.
+            if str(response) != "":
+                txtOutput.config(state="normal")
+                txtOutput.insert(INSERT,("ChatBot:    " + str(response) + "\n"), 'bot')
+                txtOutput.insert(INSERT,"\n")
+                txtOutput.config(state="disabled")
+
+            #Otherwise, print [1/5] responses. **FEATURE WORTH 3Pts**
+            #When user enters something outside of topic range. 
+            else:
+                dResponse = ["Didn't quite catch that! Could you repeat it?", "I didn't understand your last message :(",
+                             "Lets switch the topic!", "What's your social security number?", "Do you have a favourite sports team?",
+                             "When is your birthday?"]
+
+                txtOutput.config(state="normal")
+                txtOutput.insert(INSERT,("ChatBot:    " + random.choice(dResponse) + "\n"), 'bot')
+                txtOutput.insert(INSERT,"\n")
+                txtOutput.config(state="disabled")
+                
 
         if request.lower() == "bye" or request.lower() == "goodbye":
                 printUser()
@@ -104,6 +177,10 @@ def startGUI():
 
     #Button that starts a new chat in python; Only visible upon chat end.
     restartButton = Button(root, text="New Chat!", font='Helvetica 18 bold', command = lambda: restartChat())
+
+    #Button opens new GUI window to conduct socket programming with another chat agent. 
+    socketChatButton = Button(root, text="Socket Chat", font='Helvetica 18 bold', command = lambda: connect())
+    socketChatButton.place(x=220, y=40)
 
     #Keep window running until otherwise. 
     root.mainloop()    
@@ -263,6 +340,7 @@ print("[Initializing Chatbox ...]")
 bot = ChatBot('Friend')
 
 #Set the trainers for the bot.
+'''
 trainer = ListTrainer(bot)
 corpus_trainer = ChatterBotCorpusTrainer(bot)
 
@@ -270,7 +348,14 @@ corpus_trainer = ChatterBotCorpusTrainer(bot)
 #current_Second = datetime.now().second
 
 #Train using a specified corpus.
-#corpus_trainer.train('chatterbot.corpus.english')
+corpus_trainer.train('chatterbot.corpus.english')
+
+#Open datasets to train the bot.
+with open('Data/chats.txt', 'r') as file:
+    data = file.readlines()
+    trainer.train(data)
+
+'''
 
 print("[Chatbox Initiation Complete!]")
 print("---------------------------------------------------")

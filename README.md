@@ -20,3 +20,5 @@ This project is an extension to [Python_Interactive_Chatbox](https://github.com/
 **Please refer to the project documentation above for more information about the project. You can also refer to the Python_Interactive_Chatbox for a non-graphical version of this project. Please note!! You must be running Python 3.8 to execute this program.**
 
 **Project documentation will contain screenshots of execution for your reference.**
+
+Project by Pamal Mangat and Ryan Hughes. 
